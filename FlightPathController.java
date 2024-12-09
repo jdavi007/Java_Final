@@ -75,7 +75,7 @@ public class FlightPathController
 			// Finding first appearances of Airport Codes & their accompanying time stamps
 			for(FlightPath path : flightPaths) // Cycle through flight path objects
 			{	
-				if(!path.getAPcode().equals("N/A")) 
+				if(!path.getAPcode().equals("N/A")) // Check for flight path with no airport code, i.e. Surface and Near-Surface
 				{
 					if(!firstAPcodes.contains(path.getAPcode()))  // If first appearance of code...
 					{
@@ -90,7 +90,7 @@ public class FlightPathController
 			// Adding first appearance time stamps to flight paths with repeated airport codes
 			for(FlightPath path : flightPaths) // Cycle through flight path objects
 			{
-				if(!path.getAPcode().equals("N/A")) 
+				if(!path.getAPcode().equals("N/A")) // Check for flight path with no airport code, i.e. Surface and Near-Surface
 				{
 					if(firstAPtimes.contains(path.getTime())) // If first appearance...
 					{
