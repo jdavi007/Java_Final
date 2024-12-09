@@ -15,42 +15,23 @@ import java.util.Scanner;
 
 public class FlightPathController
 {
-	// 1 - Preparation - done
-	//Ask the user for name of the file. Assume the file will be in the same directory as your program
-	
-	// 2 - Read - done
-	// Read file one line at a time
-	// Line format: Time, Latitude, Longitude, Location, Knots, MPH, Elevation, Rate of Elevation, Reporting Facility
-	// Read & store (in a class' object) the Time, Latitude, Longitude, Reporting Facility (only the airport code, a 4-character sequence)
-	// Store in a collection of your choice (from chapter 16 or 20)
-	// Your class should have those four attributes stored and have 2 additional attributes for the things you will look up
-	// One all data is read, close the file
-	
-	// 3 - Processing - TODO
-	// Use latitude and longitude to determine location
-	// Record the location (town name, state/province name)
-	// When querying the coordinates, you can either use a comma that separates latitude and longitude, or just have a space between them
-	// Would recommend for the airport code, to search google maps (API?) again with the term of "airport"
-	// For instance, if you see KTRI on a line, you should ask Google Maps/API to look up the location of the 4-letter code
-	// Save time and go back through your collection, find other entries that match the airport code, and add that information into those objects in the collection
-	
-	// 4 - Output - basically done (will be very quick)
-	// Create a filename that matched the one put in for perusal but amend the end of the name of the file to include the term "flightPath"
-	// Print out an object's attributes one at a time. Make sure to separate your objects one per line
-	// Each line should look like: Time, Latitude, Longitude, Current Location, Airport Code, Name & Locale of the airport (airport name/location)
-	// After you're done, close the new .csv file
-	// Utilize the same CSV format when saving the new file
-	
-	
 	public static void main(String[] args) 
 	{
 		String inputFile; // For user input
 		ArrayList<List<String>> flightRecords = new ArrayList<>(); // ArrayList of String lists to hold flight info read from file
+		ArrayList<FlightPath> flightPaths = new ArrayList<>(); // ArrayList to store flight path objects
+		ArrayList<String> firstAPcodes = new ArrayList<>(); // ArrayList to store unique airport codes
+		ArrayList<String> firstAPtimes = new ArrayList<>(); // ArrayList to store time of first appearance of airport codes from firstAPcodes
+		
+		
 		
 		// Getting filename
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter the name of the flight path file: ");
 		inputFile = s.nextLine();
+		s.close();
+		
+		
 		
 		// Reading from file
 		try
@@ -76,17 +57,65 @@ public class FlightPathController
 		}
 		
 		
-		// TODO: With FileWriter open:
-		// (Need to figure out Google stuff before worrying about file output)
-		// Cycle through records, create objects, write info to file
+		// Creating flight path objects
 		for(List<String> record : flightRecords) 
 		{
 			FlightPath flightPath = new FlightPath(record); // Create filePath object
-			//flightPath.print(); // Print for testing
-			
-			// TODO: Write info to file
+			//flightPath.print(); // Test print
+			flightPaths.add(flightPath); // Store in collection
 		}
-		// TODO: Close FileWriter
+		
+		// Finding first appearances of Airport Codes & their accompanying time stamps
+		for(FlightPath path : flightPaths) // Cycle through flight path objects
+		{	
+			if(!path.getAPcode().equals("N/A")) 
+			{
+				if(!firstAPcodes.contains(path.getAPcode()))  // If first appearance of code...
+				{
+					firstAPcodes.add(path.getAPcode()); // Add to list of first appearance codes
+					firstAPtimes.add(path.getTime()); // Add time to list of first appearance times
+				}
+			}
+		}
+		
+		
+		
+		// Adding first appearance time stamps to flight paths with repeated airport codes
+		for(FlightPath path : flightPaths) // Cycle through flight path objects
+		{
+			if(!path.getAPcode().equals("N/A")) 
+			{
+				if(firstAPtimes.contains(path.getTime())) // If first appearance...
+				{
+					path.setFirstAppearanceFlag(true); // Set first appearance flag
+				}
+				else // If not first appearance...
+				{
+					for(int i = 0; i < firstAPcodes.size(); i++) // Cycle through firstAPcodes
+					{
+						if(path.getAPcode().equals(firstAPcodes.get(i))) // Find index of correct code
+						{
+							path.setFirstAppearance(firstAPtimes.get(i)); // Set time of first appearance based on index of the corresponding code
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
+		// Test print
+		/*
+		for(FlightPath path : flightPaths) 
+		{
+			path.print();
+		}
+		*/
+		
+		
+		
+		// TODO: Create new csv filename by removing '.csv' from inputFile variable and adding 'flightPath.csv'
+		// TODO: Output to file by cycling through FlightPath objects and using toCSVstring() method
 	}
 
 }
