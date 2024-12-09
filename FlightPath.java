@@ -1,4 +1,7 @@
+
 import java.util.List;
+
+// API key: AIzaSyDPtIm0V4V0UgcbRaf6FEXSWQ1NGDK2K7s
 
 public class FlightPath
 {
@@ -8,9 +11,10 @@ public class FlightPath
 	private String longitude; // Longitude pulled from file
 	private String airport; // Airport info pulled from .csv file
 	private StringBuilder airportCode = new StringBuilder(); // Empty StringBuilder to get only airport code
-	private String location = ""; // Town & State/Province needed from Google Maps query
-	private String airportName = ""; // needed from Google Maps query
-	private String airportLocation = ""; // needed from Google Maps query
+	private Boolean firstAppearanceFlag = false;
+	private String firstAppearance = "";
+	
+	
 	
 	// Constructor
 	public FlightPath(List<String> record) 
@@ -18,7 +22,7 @@ public class FlightPath
 		time = record.get(0);
 		latitude = record.get(1);
 		longitude = record.get(2);
-		airport = record.get(record.size() - 1);
+		airport = record.getLast();
 		
 		// Getting airport code from airport string by searching for parentheses
 		if(!airport.equals(" Surface and Near-Surface"))
@@ -53,47 +57,69 @@ public class FlightPath
 		{
 			airportCode.append("N/A"); // No airport code provided
 		}
-		
-		fetchLocation(); // Fetch location from GMaps
-		fetchAirport(); // Fetch airport name & location from GMaps
 	}// end Constructor
 	
 	
-	// function to send latitude and longitude to Google API to retrieve flight location
-	private void fetchLocation() {
-		try {
-			// put the API call to Google Maps once found
-			location = "Town, State"; // Example location
-		} catch (Exception e) {
-			System.out.println("Unable to retrieve location from Google Maps API.");
-			location = "unknown";
+	
+	// Getter for airport code
+	public String getAPcode() 
+	{
+		return airportCode.toString();
+	}
+	
+	
+	
+	// Getter for timestamp
+	public String getTime() 
+	{
+		return time;
+	}
+	
+	
+	
+	// Setter for firstAppearanceFlag
+	public void setFirstAppearanceFlag(Boolean b) 
+	{
+		firstAppearanceFlag = b;
+	}
+	
+	
+	
+	// Setter for firstAppearance time stamp
+	public void setFirstAppearance(String s) 
+	{
+		firstAppearance = s;
+	}
+	
+	
+	
+	// Function to create a csv string for output to new csv file
+	public String toCSVstring() 
+	{
+		if(firstAppearanceFlag || airportCode.toString().equals("N/A")) 
+		{
+			return String.format("%s,%s,%s,%s", time, latitude, longitude, airportCode.toString());
+		}
+		else 
+		{
+			return String.format("%s,%s,%s,%s,%s", time, latitude, longitude, airportCode.toString(), firstAppearance);
 		}
 	}
-	// function to send airport code to Google API to get airport name & location
-	private void fetchAirport() {
-		try {
-			if (!airportCode.toString().equals("N/A")) // If airport code is available
-			{
-				// put the API call to Google Maps once found
-				airportName = "Airport Name"; // Example airport name
-				airportLocation = "city, country"; // Example airport location
-			}
-			else {
-			airportName = "unknown";
-			airportLocation = "unknown";
-			}
-		} catch (Exception e) {
-			System.out.println("Unable to retrieve airport information from Google Maps API.");
-			airportName = "unknown";
-			airportLocation = "unknown";
-			}
-	}
-	public String toCSVstring() { // Return a string in CSV format(separated by commas)
-		return String.format("%s,%s,%s,%s,%s,%s,%s", time, latitude, longitude, location, airportCode.toString(), airportName, airportLocation);
-	}
-	public void print() // TODO: Create string to send to file instead of printing
+	
+	
+	
+	// Function to print flight path data - used for testing
+	public void print()
 	{
-		System.out.printf("Time: %s\tLatitude: %s\tLongitude: %s\tCurrent Location: %s\tAirport Code: %s\tAirport Name: %s\tAirport Locale: %s%n",
-				time, latitude, longitude, location, airportCode.toString(), airportName, airportLocation);
+		if(firstAppearanceFlag || airportCode.toString().equals("N/A")) 
+		{
+			System.out.printf("Time: %s\tLatitude: %s\tLongitude: %s\tAirport Code: %s%n",
+				time, latitude, longitude, airportCode.toString());
+		}
+		else 
+		{
+			System.out.printf("Time: %s\tLatitude: %s\tLongitude: %s\tAirport Code: %s\tFirst Appearance: %s%n",
+					time, latitude, longitude, airportCode.toString(), firstAppearance);
+		}
 	}
 }
