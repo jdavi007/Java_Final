@@ -19,7 +19,7 @@ public class FlightPath
 		time = record.get(0);
 		latitude = record.get(1);
 		longitude = record.get(2);
-		airport = record.getLast();
+		airport = record.getLast(); // May need to use record.get(record.size() - 1) here. Either one or the other would not work for some of us
 		
 		// Getting airport code from airport string by searching for parentheses
 		if(!airport.equals(" Surface and Near-Surface"))
