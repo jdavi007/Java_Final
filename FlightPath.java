@@ -1,7 +1,4 @@
-
 import java.util.List;
-
-// API key: AIzaSyDPtIm0V4V0UgcbRaf6FEXSWQ1NGDK2K7s
 
 public class FlightPath
 {
@@ -98,11 +95,11 @@ public class FlightPath
 	{
 		if(firstAppearanceFlag || airportCode.toString().equals("N/A")) 
 		{
-			return String.format("%s,%s,%s,%s", time, latitude, longitude, airportCode.toString());
+			return String.format("%s,%s,%s,%s%n", time, latitude, longitude, airportCode.toString());
 		}
 		else 
 		{
-			return String.format("%s,%s,%s,%s,%s", time, latitude, longitude, airportCode.toString(), firstAppearance);
+			return String.format("%s,%s,%s,%s,%s%n", time, latitude, longitude, airportCode.toString(), firstAppearance);
 		}
 	}
 	
