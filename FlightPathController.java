@@ -22,6 +22,7 @@ public class FlightPathController
 		ArrayList<FlightPath> flightPaths = new ArrayList<>(); // ArrayList to store flight path objects
 		ArrayList<String> firstAPcodes = new ArrayList<>(); // ArrayList to store unique airport codes
 		ArrayList<String> firstAPtimes = new ArrayList<>(); // ArrayList to store time of first appearance of airport codes from firstAPcodes
+		Boolean fileLoaded = false; // Boolean used to track if flight path data was successfully collected from the input file
 		
 		
 		
@@ -50,72 +51,99 @@ public class FlightPathController
 			}
 			
 			br.close(); // Close BufferedReader
+			fileLoaded = true;
 		}
 		catch (IOException e) 
 		{
-			System.out.println("Error: There was an issue retriving information from the file.\n");
+			System.out.println("Error: There was an issue retriving information from the file."); // Output error message
 		}
 		
 		
-		// Creating flight path objects
-		for(List<String> record : flightRecords) 
+		
+		if(fileLoaded) // Check for invalid file
 		{
-			FlightPath flightPath = new FlightPath(record); // Create filePath object
-			//flightPath.print(); // Test print
-			flightPaths.add(flightPath); // Store in collection
-		}
-		
-		// Finding first appearances of Airport Codes & their accompanying time stamps
-		for(FlightPath path : flightPaths) // Cycle through flight path objects
-		{	
-			if(!path.getAPcode().equals("N/A")) 
+			// Creating flight path objects
+			for(List<String> record : flightRecords) 
 			{
-				if(!firstAPcodes.contains(path.getAPcode()))  // If first appearance of code...
+				FlightPath flightPath = new FlightPath(record); // Create filePath object
+				//flightPath.print(); // Test print
+				flightPaths.add(flightPath); // Store in collection
+			}
+		
+		
+			
+			// Finding first appearances of Airport Codes & their accompanying time stamps
+			for(FlightPath path : flightPaths) // Cycle through flight path objects
+			{	
+				if(!path.getAPcode().equals("N/A")) 
 				{
-					firstAPcodes.add(path.getAPcode()); // Add to list of first appearance codes
-					firstAPtimes.add(path.getTime()); // Add time to list of first appearance times
+					if(!firstAPcodes.contains(path.getAPcode()))  // If first appearance of code...
+					{
+						firstAPcodes.add(path.getAPcode()); // Add to list of first appearance codes
+						firstAPtimes.add(path.getTime()); // Add time to list of first appearance times
+					}
 				}
 			}
-		}
 		
 		
 		
-		// Adding first appearance time stamps to flight paths with repeated airport codes
-		for(FlightPath path : flightPaths) // Cycle through flight path objects
-		{
-			if(!path.getAPcode().equals("N/A")) 
+			// Adding first appearance time stamps to flight paths with repeated airport codes
+			for(FlightPath path : flightPaths) // Cycle through flight path objects
 			{
-				if(firstAPtimes.contains(path.getTime())) // If first appearance...
+				if(!path.getAPcode().equals("N/A")) 
 				{
-					path.setFirstAppearanceFlag(true); // Set first appearance flag
-				}
-				else // If not first appearance...
-				{
-					for(int i = 0; i < firstAPcodes.size(); i++) // Cycle through firstAPcodes
+					if(firstAPtimes.contains(path.getTime())) // If first appearance...
 					{
-						if(path.getAPcode().equals(firstAPcodes.get(i))) // Find index of correct code
+						path.setFirstAppearanceFlag(true); // Set first appearance flag
+					}
+					else // If not first appearance...
+					{
+						for(int i = 0; i < firstAPcodes.size(); i++) // Cycle through firstAPcodes
 						{
-							path.setFirstAppearance(firstAPtimes.get(i)); // Set time of first appearance based on index of the corresponding code
+							if(path.getAPcode().equals(firstAPcodes.get(i))) // Find index of correct code
+							{
+								path.setFirstAppearance(firstAPtimes.get(i)); // Set time of first appearance based on index of the corresponding code
+							}
 						}
 					}
 				}
 			}
+		
+		
+		
+			// Test print
+			/*
+			for(FlightPath path : flightPaths) 
+			{
+				path.print();
+			}
+			 */
+		
+		
+		
+			// Creating new filename
+			String outFile = inputFile.substring(0, inputFile.length()-4) + "_flightPath.csv";
+		
+		
+		
+			// Writing to output file
+			try
+			{
+				FileWriter writer = new FileWriter(outFile); // Create file writer
+			
+				for(FlightPath path : flightPaths) // Cycle through File Path objects
+				{
+					writer.write(path.toCSVstring()); // Write path info to file
+				}
+				
+				writer.close(); // Close FileWriter
+				
+				System.out.printf("Flight path data for %s was written to %s%n", inputFile, outFile); // Output confirmation message
+			} 
+			catch (IOException e) 
+			{
+				System.out.println("Error: There was an issue generating flight path information."); // Output error message
+			}
 		}
-		
-		
-		
-		// Test print
-		/*
-		for(FlightPath path : flightPaths) 
-		{
-			path.print();
-		}
-		*/
-		
-		
-		
-		// TODO: Create new csv filename by removing '.csv' from inputFile variable and adding 'flightPath.csv'
-		// TODO: Output to file by cycling through FlightPath objects and using toCSVstring() method
 	}
-
 }
