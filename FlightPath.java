@@ -46,8 +46,6 @@ public class FlightPath
 							airportCode.append(c);
 						}
 				}
-				
-				// May need to remove 'K' at the beginning of airportCode
 			}
 		}
 		else 
