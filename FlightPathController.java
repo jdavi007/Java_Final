@@ -1,7 +1,7 @@
 /*
  * CSC 2220 - Programming In Java
  * Final Exam
- * Jacob Davis, Dylan Dray, Kaylee Strope
+ * Jacob Davis
  * 
  * Note: 
  * If using Eclipse, may need to place .csv files into the res folder.
@@ -9,7 +9,7 @@
  * If not on Eclipse, .csv files need to be stored in the same folder as the project
  * or may need to input the entire file path.
  * 
- * We included the sample .csv file as well as the resulting output file in the res folder.
+ * Included the sample .csv file as well as the resulting output file in the res folder.
  */
 
 import java.io.BufferedReader;
